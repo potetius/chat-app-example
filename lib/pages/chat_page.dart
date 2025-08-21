@@ -15,13 +15,22 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   final List<Message> _messages = [];
+  bool _isSending = false;
 
   void _sendMessage(String text) {
     setState(() {
       _messages.add(Message(text: text, isUser: true));
+      _isSending = true;
     });
 
-    // Botの返信（ランダム）
+    // 1. GIFを2秒表示して消す
+    Future.delayed(const Duration(seconds: 2), () {
+      setState(() {
+        _isSending = false;
+      });
+    });
+
+    // 2. Botの返信
     Future.delayed(const Duration(milliseconds: 500), () {
       setState(() {
         _messages.add(Message(text: getRandomBotResponse(), isUser: false));
@@ -33,15 +42,32 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Simple Chat")),
-      body: Column(
+      body: Stack(
         children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: _messages.length,
-              itemBuilder: (ctx, i) => MessageBubble(message: _messages[i]),
-            ),
+          Column(
+            children: [
+              Expanded(
+                child: ListView.builder(
+                  itemCount: _messages.length,
+                  itemBuilder: (ctx, i) => MessageBubble(message: _messages[i]),
+                ),
+              ),
+              IgnorePointer(
+                ignoring: _isSending,
+                child: MessageInput(onSend: _sendMessage),
+              ),
+            ],
           ),
-          MessageInput(onSend: _sendMessage),
+
+          // GIFエフェクトを上に重ねる
+          if (_isSending)
+            Center(
+              child: Image.asset(
+                "assets/fireworks.gif",
+                width: 200,
+                height: 200,
+              ),
+            ),
         ],
       ),
     );
