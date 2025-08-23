@@ -63,9 +63,10 @@ class _ChatPageState extends State<ChatPage> {
           if (_isSending)
             Center(
               child: Image.asset(
-                "assets/fireworks.gif",
-                width: 200,
-                height: 200,
+                //"assets/fireworks.gif",
+                "assets/e1673.gif",
+                width: 500,
+                height: 500,
               ),
             ),
         ],
